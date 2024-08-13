@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign</title>
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+    
+    <div class="header"><marquee>Signature App
+        <div class="motive">Vidhu Garg</div>
+    </marquee>
+    </div>
+    <div class="main">
+    <div class="top">
+        <div class="black">
+            <p>
+                Text Color
+            </p>
+            <input class="form-control" type="color" id="colorPicker"/>
+        </div>
+        <div class="black">
+            <p>Background</p>
+            <input class="form-control"
+            type="color"
+            id="canvasColor"/>
+        </div>
+        <div class="black">
+            <p>Font Size</p>
+            <select id="fontSizePicker" class="sizer">
+                <option valu="5">5px</option>
+                <option valu="10">10px</option>
+                <option valu="15">15px</option>
+                <option valu="20">20px</option>
+                <option valu="25">25px</option>
+                <option valu="30">30px</option>
+                <option valu="35">35px</option>
+                <option valu="40">40px</option>
+            </select>
+            </div>
+        </div>
+        <canvas class="canvas" id="myCanvas"
+        width="600" height="400">
+    </canvas>
+
+    <div class="bottom">
+        <button type="button" class="btn btn-danger" id="clearButton">
+            Clear Canvas
+        </button>
+
+        <button type="button" class="btn btn-success" id="successButton">
+            Save & Download
+        </button>
+
+        <button type="button" class="btn btn-warning" id="retrieveButton">
+            Retrieve
+        </button>
+    </div>
+    </div>
+
+
+<script>
+    const colorPicker=document.getElementById("colorPicker");
+    const canvasColor=document.getElementById("canvasColor");
+    const canvas=document.getElementById("myCanvas");
+    const clearButton=document.getElementById("clearButton");
+    const successButton=document.getElementById("successButton");
+    const retrieveButton=document.getElementById("retrieveButton");
+    const fontSizePicker=document.getElementById("fontSizePicker");
+    const ctx=canvas.getContext('2d');
+
+    colorPicker.addEventListener('change',(e)=>{
+        ctx.strokeStyle=e.target.value;
+        ctx.fillStyle=e.target.value;
+    })
+
+    canvas.addEventListener('mousedown',(e)=>{
+        isDrawing=true;
+        lastX=event.offsetX;
+        lastY=event.offsetY;
+    })
+
+    canvas.addEventListener('mousemove',(e)=>{
+        if(isDrawing){
+            ctx.beginPath();
+            ctx.moveTo(lastX,lastY);
+            ctx.lineTo(event.offsetX,event.offsetY);
+            ctx.stroke();
+
+            lastX=event.offsetX;
+            lastY=event.offsetY;
+        }
+    })
+
+    canvas.addEventListener('contextmenu', (event) => {
+            event.preventDefault();
+        });
+
+    canvas.addEventListener('mouseup',(e)=>{
+        isDrawing=false;
+    })
+
+    canvasColor.addEventListener('change',(e)=>{
+        ctx.fillStyle=e.target.value;
+        ctx.fillRect(0,0,600,400);
+    })
+
+    fontSizePicker.addEventListener('change', (event) => {
+        ctx.lineWidth = event.target.value;
+    })
+
+    clearButton.addEventListener('click',()=>{
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+    })
+
+    successButton.addEventListener('click',()=>{
+        localStorage.setItem('canvasContents',canvas.toDataURL());
+
+        let link=document.createElement('a');
+
+        link.download='my-sign.png';
+        link.href=canvas.toDataURL();
+
+        link.click();
+    })
+
+    retrieveButton.addEventListener('click',()=>{
+        let savedCanvas=localStorage.getItem('canvasContents');
+        if(savedCanvas){
+            let img=new Image();
+            img.src=savedCanvas;
+            ctx.drawImage(img,0,0);
+        }
+    })
+
+
+</script>
+</body>
+</html>
